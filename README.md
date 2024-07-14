@@ -1,1 +1,2 @@
-# Wirin_system
+# WIRIN System Design
+API Handling + Request Resolution
