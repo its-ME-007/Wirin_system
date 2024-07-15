@@ -228,5 +228,72 @@ def tv_thread():
         tv_state_level = "State1"
         return f"TV state level is now State1", 200
 
-    @app.route('/tv/statelevel/state2',
+    @app.route('/tv/statelevel/state2', methods=['POST'])
+    def state2_level():
+        global tv_state_level
+        tv_state_level = "State2"
+        return f"TV state level is now State2", 200
 
+    @app.route('/tv/statelevel/state3', methods=['POST'])
+    def state3_level():
+        global tv_state_level
+        tv_state_level = "State3"
+        return f"TV state level is now State3", 200
+
+    @app.route('/tv/statelevel', methods=['GET'])
+    def get_tv_state_level():
+        return tv_state_level, 200
+
+    @app.route('/tv/status/movingup', methods=['POST'])
+    def movingup_tv_status():
+        global tv_status
+        tv_status = "Moving Up"
+        return f"TV status is now Moving Up", 200
+
+    @app.route('/tv/status/movingdown', methods=['POST'])
+    def movingdown_tv_status():
+        global tv_status
+        tv_status = "Moving Down"
+        return f"TV status is now Moving Down", 200
+
+    @app.route('/tv/status/state1', methods=['POST'])
+    def state1_tv_status():
+        global tv_status
+        tv_status = "State1"
+        return f"TV status is now State1", 200
+
+    @app.route('/tv/status/state2', methods=['POST'])
+    def state2_tv_status():
+        global tv_status
+        tv_status = "State2"
+        return f"TV status is now State2", 200
+
+    @app.route('/tv/status/state3', methods=['POST'])
+    def state3_tv_status():
+        global tv_status
+        tv_status = "State3"
+        return f"TV status is now State3", 200
+
+    @app.route('/tv/status/error', methods=['POST'])
+    def error_tv_status():
+        global tv_status
+        tv_status = "Error"
+        return f"TV status is now Error", 200
+
+    @app.route('/tv/status', methods=['GET'])
+    def get_tv_status():
+        return tv_status, 200
+
+# Start the threads
+thread_vehicle_doors = threading.Thread(target=vehicle_doors_thread)
+thread_car_mode = threading.Thread(target=car_mode_thread)
+thread_by_wire_system = threading.Thread(target=by_wire_system_thread)
+thread_tv = threading.Thread(target=tv_thread)
+
+thread_vehicle_doors.start()
+thread_car_mode.start()
+thread_by_wire_system.start()
+thread_tv.start()
+
+if __name__ == '__main__':
+    app.run(debug=True)
