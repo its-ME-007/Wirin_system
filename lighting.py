@@ -1,10 +1,10 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Blueprint
 import threading
 from datetime import datetime
 import time
-import Blueprint 
 
 
+app = Flask(__name__)
 lighting_bp = Blueprint('lighting', __name__)
 
 status = {
@@ -251,8 +251,17 @@ def external_thread():
 
 
 
+threads = []
+threads.append(threading.Thread(target=internal_thread))
+threads.append(threading.Thread(target=external_thread))
 
+for thread in threads:
+    thread.start()
 
+# Register the Blueprint
+app.register_blueprint(lighting_bp, url_prefix='/lighting')
 
+if __name__ == '__main__':
+    app.run(debug=True)
 
 
