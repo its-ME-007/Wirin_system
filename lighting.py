@@ -52,8 +52,19 @@ status = {
             "DistTravelled": 0,
             "DriveMode": "PARKED"
         }
+    },
+    "OBC": {
+        "AC_Voltage": 0,
+        "AC_Current": 0,
+        "AC_Power": 0,
+        "Charging_Time": 0,
+        "DC_Voltage": 0,
+        "DC_Current": 0,
+        "OBC_Temperature": 0,
+        "OBC_Status": 0
     }
 }
+
 
 # Internal lights
 def internal_thread(): 
@@ -232,6 +243,12 @@ def external_thread():
     @app.route('/external/foglights/status/get', methods=['GET'])
     def get_external_foglights_status():
         return jsonify({"FogLightsStatus": status["Lighting"]["External"]["FogLights"]["Status"]})
+    
+    
+
+
+
+
 
 
 
