@@ -19,14 +19,14 @@ def check_limits(value, min_val, max_val, name):
 def tyre_pressure_thread():
     @app.route('/Tyrepressure/<point>/<side>/get', methods=['GET'])
     def tyre_pressure_get(point, side):
-        if point == 'front':
+        if point == 'F':
             if side == "L":
                 pressure = status["TyrePressure"]["front_left_wheel"]
             elif side == "R":
                 pressure = status["TyrePressure"]["front_right_wheel"]
             else:
                 return jsonify({"Error": "Invalid side"}), 400
-        elif point == 'rear':
+        elif point == 'B':
             if side == "L":
                 pressure = status["TyrePressure"]["rear_left_wheel"]
             elif side == "R":
