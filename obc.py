@@ -2,9 +2,11 @@ from flask import Flask, jsonify, request
 import threading
 from datetime import datetime
 import time
+import Blueprint
 
 app = Flask(__name__)
 
+obc_bp = Blueprint('obc', __name__)
 status = {
     "Lighting": {
         "Internal": {
@@ -67,34 +69,34 @@ status = {
 
 
 def obc_thread():
-    @app.route('/obc/ac_voltage/get', methods=['GET'])
+    @obc_bp.route('/obc/ac_voltage/get', methods=['GET'])
     def get_ac_voltage():
         return jsonify({"AC_Voltage": status["OBC"]["AC_Voltage"]})
 
-    @app.route('/obc/ac_current/get', methods=['GET'])
+    @obc_bp.route('/obc/ac_current/get', methods=['GET'])
     def get_ac_current():
         return jsonify({"AC_Current": status["OBC"]["AC_Current"]})
 
-    @app.route('/obc/ac_power/get', methods=['GET'])
+    @obc_bp.route('/obc/ac_power/get', methods=['GET'])
     def get_ac_power():
         return jsonify({"AC_Power": status["OBC"]["AC_Power"]})
 
-    @app.route('/obc/charging_time/get', methods=['GET'])
+    @obc_bp.route('/obc/charging_time/get', methods=['GET'])
     def get_charging_time():
         return jsonify({"Charging_Time": status["OBC"]["Charging_Time"]})
 
-    @app.route('/obc/dc_voltage/get', methods=['GET'])
+    @obc_bp.route('/obc/dc_voltage/get', methods=['GET'])
     def get_dc_voltage():
         return jsonify({"DC_Voltage": status["OBC"]["DC_Voltage"]})
 
-    @app.route('/obc/dc_current/get', methods=['GET'])
+    @obc_bp.route('/obc/dc_current/get', methods=['GET'])
     def get_dc_current():
         return jsonify({"DC_Current": status["OBC"]["DC_Current"]})
 
-    @app.route('/obc/obc_temperature/get', methods=['GET'])
+    @obc_bp.route('/obc/obc_temperature/get', methods=['GET'])
     def get_obc_temperature():
         return jsonify({"OBC_Temperature": status["OBC"]["OBC_Temperature"]})
 
-    @app.route('/obc/obc_status/get', methods=['GET'])
+    @obc_bp.route('/obc/obc_status/get', methods=['GET'])
     def get_obc_status():
         return jsonify({"OBC_Status": status["OBC"]["OBC_Status"]})
