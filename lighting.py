@@ -109,7 +109,6 @@ endpoints = {
         "/obc/obc_temperature/get",
         "/obc/obc_status/get"
     ]
-  
 }
 
 
