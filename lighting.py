@@ -66,6 +66,53 @@ status = {
         "OBC_Status": 0
     }
 }
+endpoints = {
+    "internal_lighting_endpoints": [
+        "/internal/rooflight/status/post",
+        "/internal/rooflight/brightness/post",
+        "/internal/doorpuddlelights/status/post",
+        "/internal/doorpuddlelights/brightness/post",
+        "/internal/floorlights/status/post",
+        "/internal/floorlights/brightness/post",
+        "/internal/dashboardlights/status/post",
+        "/internal/dashboardlights/brightness/post",
+        "/internal/bootlights/status/post",
+        "/internal/rooflight/status/get",
+        "/internal/rooflight/brightness/get",
+        "/internal/doorpuddlelights/status/get",
+        "/internal/doorpuddlelights/brightness/get",
+        "/internal/floorlights/status/get",
+        "/internal/floorlights/brightness/get",
+        "/internal/dashboardlights/status/get",
+        "/internal/dashboardlights/brightness/get",
+        "/internal/bootlights/status/get"
+    ],
+    "external_lighting_endpoints": [
+        "/external/headlights/status/post",
+        "/external/taillights/status/post",
+        "/external/brakelights/status/post",
+        "/external/turnsignals/status/post",
+        "/external/foglights/status/post",
+        "/external/headlights/status/get",
+        "/external/taillights/status/get",
+        "/external/brakelights/status/get",
+        "/external/turnsignals/status/get",
+        "/external/foglights/status/get"
+    ],
+    "obc_endpoints": [
+        "/obc/ac_voltage/get",
+        "/obc/ac_current/get",
+        "/obc/ac_power/get",
+        "/obc/charging_time/get",
+        "/obc/dc_voltage/get",
+        "/obc/dc_current/get",
+        "/obc/obc_temperature/get",
+        "/obc/obc_status/get"
+    ]
+  
+}
+
+
 
 
 # Internal lights
