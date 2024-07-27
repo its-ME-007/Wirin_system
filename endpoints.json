@@ -1,0 +1,24 @@
+{
+    "controlsettings_endpoints": {
+        "lowlevelcontrolmode": [
+            "/controlsettings/lowlevelcontrolmode/<mode>",
+            "/controlsettings/lowlevelcontrolmode"
+        ],
+        "pidstatus": [
+            "/controlsettings/pidstatus/<component>/<action>",
+            "/controlsettings/pidstatus/<component>"
+        ],
+        "masterpidvalues": [
+            "/controlsettings/masterpidvalues/<component>/<int:value>",
+            "/controlsettings/masterpidvalues/<component>"
+        ]
+        },
+        "controlunitstatus_endpoints": {
+            "set_ecu_status": "/controlunitstatus/<level>/<ecu>/<attribute>/<value>",
+            "get_ecu_status": "/controlunitstatus/<level>/<ecu>/<attribute>",
+            "status": "/status/controlunitstatus"
+        },
+        "overall_status_endpoints": {
+            "controlsettings_status": "/status/controlsettings"
+    }
+}
