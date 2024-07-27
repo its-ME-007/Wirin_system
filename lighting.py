@@ -1,313 +1,79 @@
-from flask import Flask, jsonify, request, Blueprint
+from flask import Flask, jsonify, request
 import threading
-from datetime import datetime
-import time
-
 
 app = Flask(__name__)
-lighting_bp = Blueprint('lighting', __name__)
 
+# Define the status dictionary to keep track of the states
 status = {
-    "Lighting": {
-        "Internal": {
-            "RoofLight": {"Status": 0, "Brightness": 0},
-            "DoorPuddleLights": {"Status": 0, "Brightness": 0},
-            "FloorLights": {"Status": 0, "Brightness": 0},
-            "DashboardLights": {"Status": 0, "Brightness": 0},
-            "BootLights": {"Status": 0}
+    "Lights": {
+        "Internal Lights": {
+            "Roof Light": {"status": 0, "brightness": 0},
+            "Door Puddle Lights": {"status": 0, "brightness": 0},
+            "Floor Lights": {"status": 0, "brightness": 0},
+            "Dashboard Lights": {"status": 0, "brightness": 0}
         },
-        "External": {
-            "Headlights": {"Status": 0},
-            "TailLights": {"Status": 0},
-            "BrakeLights": {"Status": 0},
-            "TurnSignals": {"Status": 0},
-            "FogLights": {"Status": 0}
+        "External Lights": {
+            "Boot Lights": {"status": 0, "brightness": 0},
+            "Headlights": {"status": 0, "brightness": 0},
+            "Tail lights": {"status": 0, "brightness": 0},
+            "Brake lights": {"status": 0, "brightness": 0},
+            "Turn signals": {"status": 0, "brightness": 0},
+            "Fog lights": {"status": 0, "brightness": 0}
         }
-    },
-    "CarData": {
-        "cardata1": {
-            "SpeedL": 0,
-            "SpeedR": 0,
-            "SteeringAngle": 0,
-            "BrakeLevel": 0,
-            "Gear": "Neutral",
-            "FootSwitch": "ON",
-            "MotorBrake": "ON",
-            "KellyLStatus": 0,
-            "KellyRStatus": 0,
-            "VehicleError": 0,
-        },
-        "cardata2": {
-            "ihumidity": 0,
-            "itemperature": 0,
-        },
-        "cardata3": {
-            "CAN1Stat": "Active",
-            "CAN2Stat": "Active",
-            "CAN3Stat": "Active",
-            "Internet": "Active",
-            "Ethernet": "Active"
-        },
-        "cardata4": {
-            "Globalclock": "",
-            "Distance_to_empty": 100,
-            "DistTravelled": 0,
-            "DriveMode": "PARKED"
-        }
-    },
-    "OBC": {
-        "AC_Voltage": 0,
-        "AC_Current": 0,
-        "AC_Power": 0,
-        "Charging_Time": 0,
-        "DC_Voltage": 0,
-        "DC_Current": 0,
-        "OBC_Temperature": 0,
-        "OBC_Status": 0
     }
 }
-endpoints = {
-    "internal_lighting_endpoints": [
-        "/internal/rooflight/status/post",
-        "/internal/rooflight/brightness/post",
-        "/internal/doorpuddlelights/status/post",
-        "/internal/doorpuddlelights/brightness/post",
-        "/internal/floorlights/status/post",
-        "/internal/floorlights/brightness/post",
-        "/internal/dashboardlights/status/post",
-        "/internal/dashboardlights/brightness/post",
-        "/internal/bootlights/status/post",
-        "/internal/rooflight/status/get",
-        "/internal/rooflight/brightness/get",
-        "/internal/doorpuddlelights/status/get",
-        "/internal/doorpuddlelights/brightness/get",
-        "/internal/floorlights/status/get",
-        "/internal/floorlights/brightness/get",
-        "/internal/dashboardlights/status/get",
-        "/internal/dashboardlights/brightness/get",
-        "/internal/bootlights/status/get"
-    ],
-    "external_lighting_endpoints": [
-        "/external/headlights/status/post",
-        "/external/taillights/status/post",
-        "/external/brakelights/status/post",
-        "/external/turnsignals/status/post",
-        "/external/foglights/status/post",
-        "/external/headlights/status/get",
-        "/external/taillights/status/get",
-        "/external/brakelights/status/get",
-        "/external/turnsignals/status/get",
-        "/external/foglights/status/get"
-    ],
-    "obc_endpoints": [
-        "/obc/ac_voltage/get",
-        "/obc/ac_current/get",
-        "/obc/ac_power/get",
-        "/obc/charging_time/get",
-        "/obc/dc_voltage/get",
-        "/obc/dc_current/get",
-        "/obc/obc_temperature/get",
-        "/obc/obc_status/get"
-    ]
-}
 
+# Define endpoints for setting and getting light status
+@app.route('/lights/<light_type>/<light_name>/<int:action>/<int:brightness>', methods=['POST'])
+def set_light_status(light_type, light_name, action, brightness):
+    """
+    Set the status and brightness of a light.
 
+    Args:
+        light_type (str): The type of light (Internal Lights or External Lights).
+        light_name (str): The name of the light.
+        action (int): The action to perform (0 for OFF, 1 for ON).
+        brightness (int): The brightness of the light (0-100).
 
+    Returns:
+        A JSON response with the updated light status.
+    """
+    if light_type in status["Lights"] and light_name in status["Lights"][light_type]:
+        if action not in [0, 1]:
+            return jsonify({"error": "Invalid action"}), 400
+        if brightness < 0 or brightness > 100:
+            return jsonify({"error": "Invalid brightness"}), 400
+        status["Lights"][light_type][light_name]["status"] = action
+        status["Lights"][light_type][light_name]["brightness"] = brightness
+        return jsonify({"status": f"{light_name} is now {'ON' if action == 1 else 'OFF'} with brightness {brightness}"}), 200
+    return jsonify({"error": "Invalid light type or light name"}), 400
 
-# Internal lights
-def internal_thread(): 
-    @lighting_bp.route('/internal/rooflight/status/post', methods=['POST'])
-    def set_internal_rooflight_status():
-        light_status = request.json["Status"]
-        if light_status not in [0, 1]:
-            return jsonify({"Error": "Invalid Status"}), 400
-        status["Lighting"]["Internal"]["RoofLight"]["Status"] = light_status
-        return jsonify({"RoofLightStatus": status["Lighting"]["Internal"]["RoofLight"]["Status"]})
+@app.route('/lights/<light_type>/<light_name>', methods=['GET'])
+def get_light_status(light_type, light_name):
+    """
+    Get the status of a light.
 
-    @lighting_bp.route('/internal/rooflight/status/get', methods=['GET'])
-    def get_internal_rooflight_status():
-        return jsonify({"RoofLightStatus": status["Lighting"]["Internal"]["RoofLight"]["Status"]})
+    Args:
+        light_type (str): The type of light (Internal Lights or External Lights).
+        light_name (str): The name of the light.
 
-    @lighting_bp.route('/internal/rooflight/brightness/post', methods=['POST'])
-    def set_internal_rooflight_brightness():
-        brightness = request.json["Brightness"]
-        if not 0 <= brightness <= 100:
-            return jsonify({"Error": "Invalid Brightness"}), 400
-        status["Lighting"]["Internal"]["RoofLight"]["Brightness"] = brightness
-        return jsonify({"RoofLightBrightness": status["Lighting"]["Internal"]["RoofLight"]["Brightness"]})
+    Returns:
+        A JSON response with the light status.
+    """
+    if light_type in status["Lights"] and light_name in status["Lights"][light_type]:
+        return jsonify(status["Lights"][light_type][light_name]), 200
+    return jsonify({"error": "Invalid light type or light name"}), 400
 
-    @lighting_bp.route('/internal/rooflight/brightness/get', methods=['GET'])
-    def get_internal_rooflight_brightness():
-        return jsonify({"RoofLightBrightness": status["Lighting"]["Internal"]["RoofLight"]["Brightness"]})
-    
-    @lighting_bp.route('/internal/doorpuddlelights/status/post', methods=['POST'])
-    def set_internal_doorpuddlelights_status():
-        light_status = request.json["Status"]
-        if light_status not in [0, 1]:
-            return jsonify({"Error": "Invalid Status"}), 400
-        status["Lighting"]["Internal"]["DoorPuddleLights"]["Status"] = light_status
-        return jsonify({"DoorPuddleLightsStatus": status["Lighting"]["Internal"]["DoorPuddleLights"]["Status"]})
+# Define endpoint for retrieving the status of all lights
+@app.route('/status/lights', methods=['GET'])
+def get_lights_status():
+    """
+    Get the status of all lights.
 
-    @lighting_bp.route('/internal/doorpuddlelights/status/get', methods=['GET'])
-    def get_internal_doorpuddlelights_status():
-        return jsonify({"DoorPuddleLightsStatus": status["Lighting"]["Internal"]["DoorPuddleLights"]["Status"]})
-
-    @lighting_bp.route('/internal/doorpuddlelights/brightness/post', methods=['POST'])
-    def set_internal_doorpuddlelights_brightness():
-        brightness = request.json["Brightness"]
-        if not 0 <= brightness <= 100:
-            return jsonify({"Error": "Invalid Brightness"}), 400
-        status["Lighting"]["Internal"]["DoorPuddleLights"]["Brightness"] = brightness
-        return jsonify({"DoorPuddleLightsBrightness": status["Lighting"]["Internal"]["DoorPuddleLights"]["Brightness"]})
-
-    @lighting_bp.route('/internal/doorpuddlelights/brightness/get', methods=['GET'])
-    def get_internal_doorpuddlelights_brightness():
-        return jsonify({"DoorPuddleLightsBrightness": status["Lighting"]["Internal"]["DoorPuddleLights"]["Brightness"]})
-
-    # Similar functions for FloorLights
-    @lighting_bp.route('/internal/floorlights/status/post', methods=['POST'])
-    def set_internal_floorlights_status():
-        light_status = request.json["Status"]
-        if light_status not in [0, 1]:
-            return jsonify({"Error": "Invalid Status"}), 400
-        status["Lighting"]["Internal"]["FloorLights"]["Status"] = light_status
-        return jsonify({"FloorLightsStatus": status["Lighting"]["Internal"]["FloorLights"]["Status"]})
-
-    @lighting_bp.route('/internal/floorlights/status/get', methods=['GET'])
-    def get_internal_floorlights_status():
-        return jsonify({"FloorLightsStatus": status["Lighting"]["Internal"]["FloorLights"]["Status"]})
-
-    @lighting_bp.route('/internal/floorlights/brightness/post', methods=['POST'])
-    def set_internal_floorlights_brightness():
-        brightness = request.json["Brightness"]
-        if not 0 <= brightness <= 100:
-            return jsonify({"Error": "Invalid Brightness"}), 400
-        status["Lighting"]["Internal"]["FloorLights"]["Brightness"] = brightness
-        return jsonify({"FloorLightsBrightness": status["Lighting"]["Internal"]["FloorLights"]["Brightness"]})
-
-    @lighting_bp.route('/internal/floorlights/brightness/get', methods=['GET'])
-    def get_internal_floorlights_brightness():
-        return jsonify({"FloorLightsBrightness": status["Lighting"]["Internal"]["FloorLights"]["Brightness"]})
-
-    # Similar functions for DashboardLights
-    @lighting_bp.route('/internal/dashboardlights/status/post', methods=['POST'])
-    def set_internal_dashboardlights_status():
-        light_status = request.json["Status"]
-        if light_status not in [0, 1]:
-            return jsonify({"Error": "Invalid Status"}), 400
-        status["Lighting"]["Internal"]["DashboardLights"]["Status"] = light_status
-        return jsonify({"DashboardLightsStatus": status["Lighting"]["Internal"]["DashboardLights"]["Status"]})
-
-    @lighting_bp.route('/internal/dashboardlights/status/get', methods=['GET'])
-    def get_internal_dashboardlights_status():
-        return jsonify({"DashboardLightsStatus": status["Lighting"]["Internal"]["DashboardLights"]["Status"]})
-
-    @lighting_bp.route('/internal/dashboardlights/brightness/post', methods=['POST'])
-    def set_internal_dashboardlights_brightness():
-        brightness = request.json["Brightness"]
-        if not 0 <= brightness <= 100:
-            return jsonify({"Error": "Invalid Brightness"}), 400
-        status["Lighting"]["Internal"]["DashboardLights"]["Brightness"] = brightness
-        return jsonify({"DashboardLightsBrightness": status["Lighting"]["Internal"]["DashboardLights"]["Brightness"]})
-
-    @lighting_bp.route('/internal/dashboardlights/brightness/get', methods=['GET'])
-    def get_internal_dashboardlights_brightness():
-        return jsonify({"DashboardLightsBrightness": status["Lighting"]["Internal"]["DashboardLights"]["Brightness"]})
-
-    # Similar functions for BootLights
-    @lighting_bp.route('/internal/bootlights/status/post', methods=['POST'])
-    def set_internal_bootlights_status():
-        light_status = request.json["Status"]
-        if light_status not in [0, 1]:
-            return jsonify({"Error": "Invalid Status"}), 400
-        status["Lighting"]["Internal"]["BootLights"]["Status"] = light_status
-        return jsonify({"BootLightsStatus": status["Lighting"]["Internal"]["BootLights"]["Status"]})
-
-    @lighting_bp.route('/internal/bootlights/status/get', methods=['GET'])
-    def get_internal_bootlights_status():
-        return jsonify({"BootLightsStatus": status["Lighting"]["Internal"]["BootLights"]["Status"]})
-
-# Repeat similar functions for DoorPuddleLights, FloorLights, DashboardLights, BootLights
-
-# External lights
-def external_thread(): 
-    @lighting_bp.route('/external/headlights/status/post', methods=['POST'])
-    def set_external_headlights_status():
-        light_status = request.json["Status"]
-        if light_status not in [0, 1]:
-            return jsonify({"Error": "Invalid Status"}), 400
-        status["Lighting"]["External"]["Headlights"]["Status"] = light_status
-        return jsonify({"HeadlightsStatus": status["Lighting"]["External"]["Headlights"]["Status"]})
-
-    @lighting_bp.route('/external/headlights/status/get', methods=['GET'])
-    def get_external_headlights_status():
-        return jsonify({"HeadlightsStatus": status["Lighting"]["External"]["Headlights"]["Status"]})
-    
-    @lighting_bp.route('/external/taillights/status/post', methods=['POST'])
-    def set_external_taillights_status():
-        light_status = request.json["Status"]
-        if light_status not in [0, 1]:
-            return jsonify({"Error": "Invalid Status"}), 400
-        status["Lighting"]["External"]["TailLights"]["Status"] = light_status
-        return jsonify({"TailLightsStatus": status["Lighting"]["External"]["TailLights"]["Status"]})
-
-    @lighting_bp.route('/external/taillights/status/get', methods=['GET'])
-    def get_external_taillights_status():
-        return jsonify({"TailLightsStatus": status["Lighting"]["External"]["TailLights"]["Status"]})
-    
-    
-    @lighting_bp.route('/external/brakelights/status/post', methods=['POST'])
-    def set_external_brakelights_status():
-        light_status = request.json["Status"]
-        if light_status not in [0, 1]:
-            return jsonify({"Error": "Invalid Status"}), 400
-        status["Lighting"]["External"]["BrakeLights"]["Status"] = light_status
-        return jsonify({"BrakeLightsStatus": status["Lighting"]["External"]["BrakeLights"]["Status"]})
-
-    @lighting_bp.route('/external/brakelights/status/get', methods=['GET'])
-    def get_external_brakelights_status():
-        return jsonify({"BrakeLightsStatus": status["Lighting"]["External"]["BrakeLights"]["Status"]})
-
-    @lighting_bp.route('/external/turnsignals/status/post', methods=['POST'])
-    def set_external_turnsignals_status():
-        light_status = request.json["Status"]
-        if light_status not in [0, 1]:
-            return jsonify({"Error": "Invalid Status"}), 400
-        status["Lighting"]["External"]["TurnSignals"]["Status"] = light_status
-        return jsonify({"TurnSignalsStatus": status["Lighting"]["External"]["TurnSignals"]["Status"]})
-
-    @lighting_bp.route('/external/turnsignals/status/get', methods=['GET'])
-    def get_external_turnsignals_status():
-        return jsonify({"TurnSignalsStatus": status["Lighting"]["External"]["TurnSignals"]["Status"]})
-
-    @lighting_bp.route('/external/foglights/status/post', methods=['POST'])
-    def set_external_foglights_status():
-        light_status = request.json["Status"]
-        if light_status not in [0, 1]:
-            return jsonify({"Error": "Invalid Status"}), 400
-        status["Lighting"]["External"]["FogLights"]["Status"] = light_status
-        return jsonify({"FogLightsStatus": status["Lighting"]["External"]["FogLights"]["Status"]})
-
-    @lighting_bp.route('/external/foglights/status/get', methods=['GET'])
-    def get_external_foglights_status():
-        return jsonify({"FogLightsStatus": status["Lighting"]["External"]["FogLights"]["Status"]})
-    
-    
-
-
-
-
-threads = []
-threads.append(threading.Thread(target=internal_thread))
-threads.append(threading.Thread(target=external_thread))
-
-for thread in threads:
-    thread.start()
-
-# Register the Blueprint
-app.register_blueprint(lighting_bp, url_prefix='/lighting')
+    Returns:
+        A JSON response with the status of all lights.
+    """
+    return jsonify(status["Lights"]), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
