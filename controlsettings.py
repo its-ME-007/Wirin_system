@@ -8,10 +8,10 @@ status = {
     "ControlSettings": {
         "LowLevelControlMode": "Manual Mode",
         "PIDStatus": {
-            "MasterControl": "OFF",
-            "SteeringRack": "OFF",
-            "Brake": "OFF",
-            "Motors": "OFF"
+            "MasterControl": 0,
+            "SteeringRack": 0,
+            "Brake": 0,
+            "Motors": 0
         },
         "MasterPIDValues": {
             "SteeringPIDOutput": 0,
@@ -37,11 +37,11 @@ def control_settings_thread():
         return jsonify({"LowLevelControlMode": status["ControlSettings"]["LowLevelControlMode"]}), 200
 
 def pid_status_thread():
-    @app.route('/controlsettings/pidstatus/<component>/<action>', methods=['POST'])
+    @app.route('/controlsettings/pidstatus/<component>/<int:action>', methods=['POST'])
     def set_pid_status(component, action):
-        if component in status["ControlSettings"]["PIDStatus"] and action in ["ON", "OFF"]:
+        if component in status["ControlSettings"]["PIDStatus"] and action in [0, 1]:
             status["ControlSettings"]["PIDStatus"][component] = action
-            return jsonify({"status": f"{component} is now {action}"}), 200
+            return jsonify({"status": f"{component} is now {'Enabled' if action == 1 else 'Disabled'}"}), 200
         return jsonify({"error": "Invalid component or action"}), 400
 
     @app.route('/controlsettings/pidstatus/<component>', methods=['GET'])
