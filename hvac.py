@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Blueprint
 import threading
 
 hvac_bp = Blueprint('hvac', __name__)
