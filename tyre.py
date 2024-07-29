@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
-
-app = Flask(__name__)
+from flask import Blueprint
+tyre_bp = Blueprint('tyre', __name__)
 
 status = {
     "TyrePressure": {
@@ -17,7 +17,7 @@ def check_limits(value, min_val, max_val, name):
     return None
 
 def tyre_pressure_thread():
-    @app.route('/Tyrepressure/<point>/<side>/get', methods=['GET'])
+    @tyre_bp.route('/Tyrepressure/<point>/<side>/get', methods=['GET'])
     def tyre_pressure_get(point, side):
         if point == 'F':
             if side == "L":
@@ -37,12 +37,9 @@ def tyre_pressure_thread():
             return jsonify({"Error": "Invalid point"}), 400
         return jsonify({"Pressure": pressure}), 200
 
-    @app.route('/Tyrepressure/all/get', methods=['GET'])
+    @tyre_bp.route('/Tyrepressure/all/get', methods=['GET'])
     def tyre_pressure_get_all():
         return jsonify(status["TyrePressure"]), 200
 
 # Start the tyre pressure thread
 tyre_pressure_thread()
-
-if __name__ == '__main__':
-    app.run(debug=True)

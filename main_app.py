@@ -11,6 +11,14 @@ from tablestat import table_bp
 from llc import control_settings_bp
 from pidstatus import pid_status_bp
 from masterpid import master_pid_values_bp
+from vehicledoors import door_bp
+from bywiresystem import bywire_bp
+from Tv import tv_bp
+from hvac import hvac_bp
+from lvl1_cu import lvl1_cu_bp
+from lvl2_cu import lvl2_cu_bp
+from carmode import carmode_bp
+from tyre import tyre_bp
 
 def create_main_app():
     app = Flask(__name__)
@@ -54,10 +62,35 @@ def create_controlsettings_app():
     app.register_blueprint(control_settings_bp)
     app.register_blueprint(master_pid_values_bp)
     app.register_blueprint(pid_status_bp)
+    return app
 
 def create_table_app():
     app = Flask(__name__)
     app.register_blueprint(table_bp)
+    return app
+
+def create_vehiclestatus_app():
+    app = Flask(__name__)
+    app.register_blueprint(door_bp)
+    app.register_blueprint(tv_bp)
+    app.register_blueprint(bywire_bp)
+    app.register_blueprint(carmode_bp)
+    return app
+
+def create_tyre_app():
+    app = Flask(__name__)
+    app.register_blueprint(tyre_bp)
+    return app
+
+def create_controlunitstatus_app():
+    app = Flask(__name__)
+    app.register_blueprint(lvl1_cu_bp)
+    app.register_blueprint(lvl2_cu_bp)
+    return app
+
+def create_hvac_app():
+    app = Flask(__name__)
+    app.register_blueprint(hvac_bp)
     return app
 
 def run_service(app, port):
@@ -71,14 +104,22 @@ if __name__ == '__main__':
     cardata_app = create_cardata_app()
     table_app = create_table_app()
     control_setting_app = create_controlsettings_app()
+    vehiclestatus_app = create_vehiclestatus_app()
+    tyre_app = create_tyre_app()
+    controlunitstatus_app = create_controlunitstatus_app()
+    hvac_app = create_hvac_app()
 
     # Start services on specific ports
     main_thread = Thread(target=run_service, args=(main_app, 5000))        # Main app on port 5000
     lighting_thread = Thread(target=run_service, args=(lighting_app, 5001))  # Combined lighting on port 5001
     obc_thread = Thread(target=run_service, args=(obc_app, 5002))          # OBC on port 5002
-    cardata_thread = Thread(target=run_service, args=(cardata_app, 5003)) # Cardata1 on port 5003
-    table_thread = Thread(target=run_service, args=(table_app, 5004))      # Table statistics on port 5007
-    control_thread = Thread(target=run_service, args = (control_setting_app, 5005))
+    cardata_thread = Thread(target=run_service, args=(cardata_app, 5003))  # Cardata1 on port 5003
+    table_thread = Thread(target=run_service, args=(table_app, 5004))      # Table statistics on port 5004
+    control_thread = Thread(target=run_service, args=(control_setting_app, 5005))  # Control settings on port 5005
+    vehiclestatus_thread = Thread(target=run_service, args=(vehiclestatus_app, 5006))  # Vehicle status on port 5006
+    tyre_thread = Thread(target=run_service, args=(tyre_app, 5007))        # Tyre status on port 5007
+    controlunitstatus_thread = Thread(target=run_service, args=(controlunitstatus_app, 5008))  # Control unit status on port 5008
+    hvac_thread = Thread(target=run_service, args=(hvac_app, 5009))        # HVAC on port 5009
     globalclock_thread = Thread(target=update_globalclock)                # Global clock (no port)
 
     # Start all threads
@@ -88,6 +129,10 @@ if __name__ == '__main__':
     cardata_thread.start()
     table_thread.start()
     control_thread.start()
+    vehiclestatus_thread.start()
+    tyre_thread.start()
+    controlunitstatus_thread.start()
+    hvac_thread.start()
     globalclock_thread.start()
 
     # Ensure all threads finish
@@ -96,5 +141,9 @@ if __name__ == '__main__':
     obc_thread.join()
     cardata_thread.join()
     table_thread.join()
-    globalclock_thread.join()
     control_thread.join()
+    vehiclestatus_thread.join()
+    tyre_thread.join()
+    controlunitstatus_thread.join()
+    hvac_thread.join()
+    globalclock_thread.join()
