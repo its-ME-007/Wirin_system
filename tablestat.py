@@ -1,6 +1,6 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Blueprint
 
-app = Flask(__name__)
+table_bp = Blueprint('table_status', __name__)
 
 status = {
     "TableStat": {
@@ -16,7 +16,7 @@ def check_limits(value, min_val, max_val, name):
         return jsonify({"Error": f"{name} value {value} is out of range ({min_val} to {max_val})"}), 400
     return None
 
-@app.route('/Tablestatus/tableheight/post', methods=['POST'])
+@table_bp.route('/Tablestatus/tableheight/post', methods=['POST'])
 def table_height_post():
     data = request.json
     height = data.get("tableheight")
@@ -28,11 +28,11 @@ def table_height_post():
     status["TableStat"]["tableheight"] = height
     return jsonify({"tableheight": height}), 200
 
-@app.route('/Tablestatus/tableheight/get', methods=['GET'])
+@table_bp.route('/Tablestatus/tableheight/get', methods=['GET'])
 def table_height_get():
     return jsonify({"tableheight": status["TableStat"]["tableheight"]}), 200
 
-@app.route('/Tablestatus/table/post', methods=['POST'])
+@table_bp.route('/Tablestatus/table/post', methods=['POST'])
 def table_post():
     data = request.json
     tablestatus = data.get("tablestatus")
@@ -43,11 +43,11 @@ def table_post():
     status["TableStat"]["tablestatus"] = tablestatus
     return jsonify({"tablestatus": tablestatus}), 200
 
-@app.route('/Tablestatus/table/get', methods=['GET'])
+@table_bp.route('/Tablestatus/table/get', methods=['GET'])
 def table_get():
     return jsonify({"tablestatus": status["TableStat"]["tablestatus"]}), 200
 
-@app.route('/Tablestatus/tablelamp/post', methods=['POST'])
+@table_bp.route('/Tablestatus/tablelamp/post', methods=['POST'])
 def table_lamp_post():
     data = request.json
     tablelamp = data.get("tablelamp")
@@ -59,12 +59,12 @@ def table_lamp_post():
     tablelamp_status = "on" if tablelamp == 1 else "off"
     return jsonify({"tablelamp": tablelamp, "tablelamp_status": tablelamp_status}), 200
 
-@app.route('/Tablestatus/tablelamp/get', methods=['GET'])
+@table_bp.route('/Tablestatus/tablelamp/get', methods=['GET'])
 def table_lamp_get():
     tablelamp_status = "on" if status["TableStat"]["tablelamp"] == 1 else "off"
-    return tablelamp_status, 200
+    return jsonify({"tablelamp_status": tablelamp_status}), 200
 
-@app.route('/Tablestatus/tablelampbrightness/post', methods=['POST'])
+@table_bp.route('/Tablestatus/tablelampbrightness/post', methods=['POST'])
 def table_lamp_brightness_post():
     data = request.json
     brightness = data.get("tablelampbrightness")
@@ -76,9 +76,11 @@ def table_lamp_brightness_post():
     status["TableStat"]["tablelampbrightness"] = brightness
     return jsonify({"tablelampbrightness": brightness}), 200
 
-@app.route('/Tablestatus/tablelampbrightness/get', methods=['GET'])
+@table_bp.route('/Tablestatus/tablelampbrightness/get', methods=['GET'])
 def table_lamp_brightness_get():
     return jsonify({"tablelampbrightness": status["TableStat"]["tablelampbrightness"]}), 200
-
+'''
 if __name__ == '__main__':
-    app.run(debug=True)
+    app = Flask(__name__)
+    app.register_blueprint(table_bp)
+    app.run(debug=True)'''
