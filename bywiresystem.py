@@ -1,41 +1,77 @@
-from flask import Blueprint, jsonify, request
+from flask import Flask, jsonify, request, Blueprint
 
-bywiresystem_bp = Blueprint('bywiresystem', __name__)
+bywire_bp = Blueprint('bywire_bp', __name__)
 
-# Assuming you have a way to store the current by-wire system statuses
 steering_status = "Open"
 acc_brake_pedal_status = "Open"
 
-@bywiresystem_bp.route('/bywiresystem/steering/set', methods=['POST'])
-def set_steering_status():
+@bywire_bp.route('/bywiresystem/steering/open', methods=['POST'])
+def open_steering():
     global steering_status
-    data = request.json
-    action = data.get('action')
-    if action not in ["Open", "Close", "Opening", "Closing", "Error"]:
-        return jsonify({"error": "Invalid action"}), 400
-    steering_status = action
-    result = f"Setting steering status to {action}"
-    return jsonify({"result": result})
+    steering_status = "Open"
+    return f"SteeringStatus is now Open", 200
 
-@bywiresystem_bp.route('/bywiresystem/steering/get', methods=['GET'])
+@bywire_bp.route('/bywiresystem/steering/close', methods=['POST'])
+def close_steering():
+    global steering_status
+    steering_status = "Close"
+    return f"SteeringStatus is now Close", 200
+
+@bywire_bp.route('/bywiresystem/steering/opening', methods=['POST'])
+def opening_steering():
+    global steering_status
+    steering_status = "Opening"
+    return f"SteeringStatus is now Opening", 200
+
+@bywire_bp.route('/bywiresystem/steering/closing', methods=['POST'])
+def closing_steering():
+    global steering_status
+    steering_status = "Closing"
+    return f"SteeringStatus is now Closing", 200
+
+@bywire_bp.route('/bywiresystem/steering/error', methods=['POST'])
+def error_steering():
+    global steering_status
+    steering_status = "Error"
+    return f"SteeringStatus is now Error", 200
+
+@bywire_bp.route('/bywiresystem/steering', methods=['GET'])
 def get_steering_status():
-    global steering_status
-    result = f"Current steering status is {steering_status}"
-    return jsonify({"result": result})
+    return steering_status, 200
 
-@bywiresystem_bp.route('/bywiresystem/accbrake/set', methods=['POST'])
-def set_acc_brake_pedal_status():
+@bywire_bp.route('/bywiresystem/accbrake/open', methods=['POST'])
+def open_acc_brake():
     global acc_brake_pedal_status
-    data = request.json
-    action = data.get('action')
-    if action not in ["Open", "Close", "Opening", "Closing", "Error"]:
-        return jsonify({"error": "Invalid action"}), 400
-    acc_brake_pedal_status = action
-    result = f"Setting accelerator/brake pedal status to {action}"
-    return jsonify({"result": result})
+    acc_brake_pedal_status = "Open"
+    return f"AccBrakePedalStatus is now Open", 200
 
-@bywiresystem_bp.route('/bywiresystem/accbrake/get', methods=['GET'])
+@bywire_bp.route('/bywiresystem/accbrake/close', methods=['POST'])
+def close_acc_brake():
+    global acc_brake_pedal_status
+    acc_brake_pedal_status = "Close"
+    return f"AccBrakePedalStatus is now Close", 200
+
+@bywire_bp.route('/bywiresystem/accbrake/opening', methods=['POST'])
+def opening_acc_brake():
+    global acc_brake_pedal_status
+    acc_brake_pedal_status = "Opening"
+    return f"AccBrakePedalStatus is now Opening", 200
+
+@bywire_bp.route('/bywiresystem/accbrake/closing', methods=['POST'])
+def closing_acc_brake():
+    global acc_brake_pedal_status
+    acc_brake_pedal_status = "Closing"
+    return f"AccBrakePedalStatus is now Closing", 200
+
+@bywire_bp.route('/bywiresystem/accbrake/error', methods=['POST'])
+def error_acc_brake():
+    global acc_brake_pedal_status
+    acc_brake_pedal_status = "Error"
+    return f"AccBrakePedalStatus is now Error", 200
+
+@bywire_bp.route('/bywiresystem/accbrake', methods=['GET'])
 def get_acc_brake_pedal_status():
-    global acc_brake_pedal_status
-    result = f"Current accelerator/brake pedal status is {acc_brake_pedal_status}"
-    return jsonify({"result": result})
+    return acc_brake_pedal_status, 200
+
+
+

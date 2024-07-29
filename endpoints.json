@@ -1,0 +1,61 @@
+{
+    "endpoints": [
+        /vehicledoors/door/open
+        /vehicledoors/door/close
+        /vehicledoors/door/opening
+        /vehicledoors/door/closing
+        /vehicledoors/door/error
+        /vehicledoors/door        
+
+        /vehicledoors/bootdoor/open
+        /vehicledoors/bootdoor/close
+        /vehicledoors/bootdoor/opening
+        /vehicledoors/bootdoor/closing
+        /vehicledoors/bootdoor/error
+        /vehicledoors/bootdoor
+
+        /vehicledoors/roofdoor/open
+        /vehicledoors/roofdoor/close
+        /vehicledoors/roofdoor/opening
+        /vehicledoors/roofdoor/closing
+        /vehicledoors/roofdoor/error
+        /vehicledoors/roofdoor
+
+        /carmode/entertainment
+        /carmode/ambient
+        /carmode/focus
+        /carmode/night
+        /carmode/ride
+        /carmode
+
+        /bywiresystem/steering/open
+        /bywiresystem/steering/close
+        /bywiresystem/steering/opening
+        /bywiresystem/steering/closing
+        /bywiresystem/steering/error
+        /bywiresystem/steering
+
+
+        /bywiresystem/accbrake/open
+        /bywiresystem/accbrake/close
+        /bywiresystem/accbrake/opening
+        /bywiresystem/accbrake/closing
+        /bywiresystem/accbrake/error
+        /bywiresystem/accbrake
+
+        /tv/on
+        /tv/off
+        /tv/mute
+        /tv/unmute
+        /tv/status
+
+
+        /tyre/inflate
+        /tyre/deflate
+        /tyre/puncture
+        /tyre/status
+        
+
+        
+    ]
+    } 
