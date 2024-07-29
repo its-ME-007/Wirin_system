@@ -27,7 +27,7 @@ status = {
 }
 
 # Define endpoints for setting and getting ECU status
-@app.route('/controlunitstatus/<level>/<ecu>/<attribute>/<value>', methods=['POST'])
+@control_unit_bp.route('/controlunitstatus/<level>/<ecu>/<attribute>/<value>', methods=['POST'])
 def set_ecu_status(level, ecu, attribute, value):
     if level in status["ControlUnitStatus"] and ecu in status["ControlUnitStatus"][level]:
         if attribute in status["ControlUnitStatus"][level][ecu]:
@@ -43,7 +43,7 @@ def set_ecu_status(level, ecu, attribute, value):
             return jsonify({"status": f"{ecu} {attribute} is now {value}"}), 200
     return jsonify({"error": "Invalid level, ECU, or attribute"}), 400
 
-@app.route('/controlunitstatus/<level>/<ecu>/<attribute>', methods=['GET'])
+@control_unit_bp.route('/controlunitstatus/<level>/<ecu>/<attribute>', methods=['GET'])
 def get_ecu_status(level, ecu, attribute):
     if level in status["ControlUnitStatus"] and ecu in status["ControlUnitStatus"][level]:
         if attribute in status["ControlUnitStatus"][level][ecu]:
@@ -57,7 +57,7 @@ def get_ecu_status(level, ecu, attribute):
     return jsonify({"error": "Invalid level, ECU, or attribute"}), 400
 
 # Define endpoint for retrieving the overall control unit status
-@app.route('/status/controlunitstatus', methods=['GET'])
+@control_unit_bp.route('/status/controlunitstatus', methods=['GET'])
 def get_control_unit_status():
     return jsonify({"ControlUnitStatus": status["ControlUnitStatus"]}), 200
 

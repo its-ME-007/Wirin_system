@@ -40,7 +40,7 @@ def validate_value(component, value):
     return False
 
 # Define endpoints for setting the value of each component
-@app.route('/hvac/<component>/<int:value>', methods=['POST'])
+@hvac_bp.route('/hvac/<component>/<int:value>', methods=['POST'])
 def set_hvac_value(component, value):
     with lock:
         try:
@@ -53,7 +53,7 @@ def set_hvac_value(component, value):
             return jsonify({"error": str(e)}), 500
 
 # Define endpoints for retrieving the value of each component
-@app.route('/hvac/<component>', methods=['GET'])
+@hvac_bp.route('/hvac/<component>', methods=['GET'])
 def get_hvac_value(component):
     with lock:
         try:
@@ -65,7 +65,7 @@ def get_hvac_value(component):
             return jsonify({"error": str(e)}), 500
 
 # Define endpoints for retrieving the status of each component
-@app.route('/status/hvac', methods=['GET'])
+@hvac_bp.route('/status/hvac', methods=['GET'])
 def get_hvac_status():
     with lock:
         try:
