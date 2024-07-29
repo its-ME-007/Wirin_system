@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 import threading
 
-app = Flask(__name__)
+hvac_bp = Blueprint('hvac', __name__)
 
 # Define the status dictionary to keep track of the states
 status = {
@@ -73,5 +73,5 @@ def get_hvac_status():
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)

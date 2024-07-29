@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 
-app = Flask(__name__)
+control_unit_bp = Blueprint('control_unit', __name__)
 
 # Define the status dictionary to keep track of the states
 status = {
@@ -61,5 +61,5 @@ def get_ecu_status(level, ecu, attribute):
 def get_control_unit_status():
     return jsonify({"ControlUnitStatus": status["ControlUnitStatus"]}), 200
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)
