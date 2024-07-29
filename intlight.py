@@ -1,8 +1,5 @@
 from flask import Flask, jsonify, request, Blueprint
 import threading
-from datetime import datetime
-import time
-
 
 #app = Flask(__name__)
 
@@ -40,7 +37,6 @@ endpoints = {
         "/internal/bootlights/status/get"
     ]
 }
-
 
 @int_lighting_bp.route('/internal/rooflight/status/post', methods=['POST'])
 def set_internal_rooflight_status():
