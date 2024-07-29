@@ -19,6 +19,8 @@ from lvl1_cu import lvl1_cu_bp
 from lvl2_cu import lvl2_cu_bp
 from carmode import carmode_bp
 from tyre import tyre_bp
+from seatf import seat_bp
+from bmsf import bms_bp
 
 def create_main_app():
     app = Flask(__name__)
@@ -93,6 +95,17 @@ def create_hvac_app():
     app.register_blueprint(hvac_bp)
     return app
 
+
+def create_seat_app():
+    app = Flask(__name__)
+    app.register_blueprint(seat_bp)
+    return app
+
+def create_bms_app():
+    app = Flask(__name__)
+    app.register_blueprint(bms_bp)
+    return app
+
 def run_service(app, port):
     app.run(host='0.0.0.0', port=port)
 
@@ -108,6 +121,8 @@ if __name__ == '__main__':
     tyre_app = create_tyre_app()
     controlunitstatus_app = create_controlunitstatus_app()
     hvac_app = create_hvac_app()
+    seat_app = create_seat_app()
+    bms_app = create_bms_app()
 
     # Start services on specific ports
     main_thread = Thread(target=run_service, args=(main_app, 5000))        # Main app on port 5000
@@ -120,6 +135,8 @@ if __name__ == '__main__':
     tyre_thread = Thread(target=run_service, args=(tyre_app, 5007))        # Tyre status on port 5007
     controlunitstatus_thread = Thread(target=run_service, args=(controlunitstatus_app, 5008))  # Control unit status on port 5008
     hvac_thread = Thread(target=run_service, args=(hvac_app, 5009))        # HVAC on port 5009
+    seat_thread = Thread(target=run_service, args=(seat_app, 5010))        # Seat status on port 5010
+    bms_thread = Thread(target=run_service, args=(bms_app, 5011))         # Battery Management System on port 5011
     globalclock_thread = Thread(target=update_globalclock)                # Global clock (no port)
 
     # Start all threads
@@ -133,6 +150,8 @@ if __name__ == '__main__':
     tyre_thread.start()
     controlunitstatus_thread.start()
     hvac_thread.start()
+    seat_thread.start()
+    bms_thread.start()
     globalclock_thread.start()
 
     # Ensure all threads finish
@@ -146,4 +165,6 @@ if __name__ == '__main__':
     tyre_thread.join()
     controlunitstatus_thread.join()
     hvac_thread.join()
+    seat_thread.join()
+    bms_thread.join()
     globalclock_thread.join()
