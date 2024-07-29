@@ -37,5 +37,17 @@
     "/battery/temperature/<int:value>",
     "/battery/temperature",
     "/status/battery"
+    "/hvac/<component>/<int:value>",
+    "/hvac/<component>",
+    "/status/hvac",
+    "/controlunitstatus/<ecu>/<attribute>/<value>",
+    "/controlunitstatus/<ecu>/<attribute>",
+    "/status/lvl1controlunitstatus",
+    "/controlunitstatus/<ecu>/<attribute>/<value>",
+    "/controlunitstatus/<ecu>/<attribute>",
+    "/status/lvl2controlunitstatus",
+    "/seats/<int:seat_index>/<string:attribute>/<value>",
+    "/seats/<int:seat_index>/<string:attribute>",
+    "/status/seats"
 ]
 } 
