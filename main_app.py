@@ -27,10 +27,21 @@ def create_main_app():
 
     @app.route('/')
     def index():
-        return jsonify({
+         return jsonify({
             "message": "Welcome to the Modular Request Resolver API",
-            "endpoints": [
-                "Prototype"
+            "port directory": [
+                "5000: Main Application: The main Flask app providing a welcome message and listing the available endpoints.",
+                "5001: Combined Lighting Application: This app handles internal and external lighting functionalities by registering int_lighting_bp and ext_lighting_bp blueprints.",
+                "5002: On-Board Computer (OBC) Application: This app handles functionalities related to the vehicle's on-board computer using the obc_bp blueprint.",
+                "5003: Car Data Application: This app handles car data functionalities by registering blueprints cardata1_bp, cardata2_bp, cardata3_bp, and cardata4_bp.",
+                "5004: Table Statistics Application: This app handles functionalities related to table statistics using the table_bp blueprint.",
+                "5005: Control Settings Application: This app handles control settings and PID statuses by registering blueprints control_settings_bp, master_pid_values_bp, and pid_status_bp.",
+                "5006: Vehicle Status Application: This app handles various vehicle status functionalities by registering blueprints door_bp, bywire_bp, carmode_bp, and tyre_bp.",
+                "5007: Tyre Status Application: This app specifically handles functionalities related to tyre status using the tyre_bp blueprint.",
+                "5008: Control Unit Status Application: This app handles the status of various control units by registering blueprints lvl1_cu_bp and lvl2_cu_bp.",
+                "5009: HVAC Application: This app handles functionalities related to the HVAC system using the hvac_bp blueprint.",
+                "5010: Seat Status Application: This app handles functionalities related to seat status using the seat_bp blueprint.",
+                "5011: Battery Management System (BMS) Application: This app handles functionalities related to the battery management system using the bms_bp blueprint."
             ]
         })
 
